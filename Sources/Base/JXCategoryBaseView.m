@@ -194,11 +194,11 @@ struct DelegateFlags {
 #pragma mark - <UICollectionViewDelegateFlowLayout>
 
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
-    return UIEdgeInsetsMake(0, [self getContentEdgeInsetLeft], 0, [self getContentEdgeInsetRight]);
+    return UIEdgeInsetsMake([self getContentEdgeInsetTop], [self getContentEdgeInsetLeft], [self getContentEdgeInsetBottom], [self getContentEdgeInsetRight]);
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    return CGSizeMake(self.dataSource[indexPath.item].cellWidth, self.collectionView.bounds.size.height);
+    return CGSizeMake(self.dataSource[indexPath.item].cellWidth, self.collectionView.bounds.size.height - [self getContentEdgeInsetTop] - [self getContentEdgeInsetBottom]);
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
@@ -253,6 +253,20 @@ struct DelegateFlags {
     return self.contentEdgeInsetRight;
 }
 
+- (CGFloat)getContentEdgeInsetTop {
+	if (self.contentEdgeInsetTop == JXCategoryViewAutomaticDimension) {
+		return 0;
+	}
+	return self.contentEdgeInsetTop;
+}
+
+- (CGFloat)getContentEdgeInsetBottom {
+	if (self.contentEdgeInsetBottom == JXCategoryViewAutomaticDimension) {
+		return 0;
+	}
+	return self.contentEdgeInsetBottom;
+}
+
 - (CGFloat)getCellWidthAtIndex:(NSInteger)index {
     return [self preferredCellWidthAtIndex:index] + self.cellWidthIncrement;
 }
@@ -282,6 +296,7 @@ struct DelegateFlags {
 
 - (CGRect)getTargetCellFrame:(NSInteger)targetIndex {
     CGFloat x = [self getContentEdgeInsetLeft];
+	CGFloat y = [self getContentEdgeInsetTop];
     for (int i = 0; i < targetIndex; i ++) {
         JXCategoryBaseCellModel *cellModel = self.dataSource[i];
         CGFloat cellWidth;
@@ -304,11 +319,12 @@ struct DelegateFlags {
     }else {
         width = selectedCellModel.cellWidth;
     }
-    return CGRectMake(x, 0, width, self.bounds.size.height);
+    return CGRectMake(x, y, width, self.bounds.size.height - y - [self getContentEdgeInsetBottom]);
 }
 
 - (CGRect)getTargetSelectedCellFrame:(NSInteger)targetIndex selectedType:(JXCategoryCellSelectedType)selectedType {
     CGFloat x = [self getContentEdgeInsetLeft];
+	CGFloat y = [self getContentEdgeInsetTop];
     for (int i = 0; i < targetIndex; i ++) {
         JXCategoryBaseCellModel *cellModel = self.dataSource[i];
         x += [self getCellWidthAtIndex:cellModel.index] + self.innerCellSpacing;
@@ -320,7 +336,7 @@ struct DelegateFlags {
     }else {
         cellWidth = [self getCellWidthAtIndex:targetIndex];
     }
-    return CGRectMake(x, 0, cellWidth, self.bounds.size.height);
+    return CGRectMake(x, y, cellWidth, self.bounds.size.height - y - [self getContentEdgeInsetBottom]);
 }
 
 - (void)initializeData {
@@ -336,6 +352,8 @@ struct DelegateFlags {
     _cellWidthZoomScrollGradientEnabled = YES;
     _contentEdgeInsetLeft = JXCategoryViewAutomaticDimension;
     _contentEdgeInsetRight = JXCategoryViewAutomaticDimension;
+	_contentEdgeInsetTop = JXCategoryViewAutomaticDimension;
+	_contentEdgeInsetBottom = JXCategoryViewAutomaticDimension;
     _lastContentViewContentOffset = CGPointZero;
     _selectedAnimationEnabled = NO;
     _selectedAnimationDuration = 0.25;

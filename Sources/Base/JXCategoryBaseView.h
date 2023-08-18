@@ -99,6 +99,10 @@
 
 @property (nonatomic, assign) CGFloat contentEdgeInsetRight;    //整体内容的右边距，默认JXCategoryViewAutomaticDimension（等于cellSpacing）
 
+@property (nonatomic, assign) CGFloat contentEdgeInsetTop; //整体内容的上边距，默认JXCategoryViewAutomaticDimension（等于0）
+
+@property (nonatomic, assign) CGFloat contentEdgeInsetBottom; //整体内容的下边距，默认JXCategoryViewAutomaticDimension（等于0）
+
 @property (nonatomic, assign) CGFloat cellWidth;    //默认JXCategoryViewAutomaticDimension
 
 @property (nonatomic, assign) CGFloat cellWidthIncrement;    //cell宽度补偿。默认：0
